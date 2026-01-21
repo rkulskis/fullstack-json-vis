@@ -1,1 +1,32 @@
-dataset.json
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+pip-selfcheck.json
+.tox/
+.eggs/
+*.egg-info/
+
+# Database
+*.sqlite3
+
+# Environment
+.env
+
+# IDE
+.idea/
+.vscode/
+
+# Other
+*.log
+*.pot
+*.potc
+celerybeat-schedule
+local_settings.py
+dump.rdb
+logs/
+.DS_Store
