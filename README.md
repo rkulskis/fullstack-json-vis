@@ -50,63 +50,45 @@ The application has at least 2 of the additional features listed
 The application has good code quality and is written with best practices in mind
 The application is performant with larger datasets
 
-# Project Structure
+# Running with Docker Compose
 
-This project is organized into the following directories:
+This project uses Docker Compose to orchestrate the services.
 
-- `backend/`: Contains the Python FastAPI application that provides an API for the data.
-- `grafana/`: Contains configuration files for Grafana, including provisioning for the datasource and dashboards.
-- `scripts/`: Contains the data ingestion script.
-- `dataset.json`: The raw dataset file.
-- `setup.sh`: A script to set up the project.
+## Prerequisites
 
-# Setup
+- Docker
+- Docker Compose
 
-1.  **Install dependencies:**
-    - Python 3.9+
-    - Poetry (for Python dependency management)
-    - PostgreSQL
-    - Grafana
+## Setup
 
-2.  **Configure environment variables:**
+1.  **Configure environment variables:**
     Create a `.env` file in the root of the project and add the following:
     ```
-    DATABASE_URL="postgresql://user:password@localhost/db"
+    DATABASE_URL="postgresql://user:password@postgres:5432/db"
     DATASET_URL="https://static.krevera.com/dataset.json"
     POSTGRES_USER="user"
     POSTGRES_PASSWORD="password"
     POSTGRES_DB="db"
     ```
+    **Important:** Make sure the `DATABASE_URL` is set to `postgresql://user:password@postgres:5432/db` so that the services can connect to the database within the Docker network.
 
-3.  **Setup the backend:**
+2.  **Build and start the services:**
     ```bash
-    cd backend
-    pip install -r requirements.txt
-    cd ..
+    docker compose up --build
     ```
+    This command will build the images for the backend and ingest services, and start all the services. The data ingestion service will run once to populate the database and then exit.
 
-4.  **Setup the database:**
-    - Make sure your PostgreSQL server is running.
-    - Create a database, user, and password that match the values in your `.env` file.
+## Accessing the services
 
-5.  **Ingest the data:**
-    ```bash
-    python scripts/ingest_data.py
-    ```
+- **Backend:** The backend API is available at `http://localhost:8000`.
+- **Grafana:** The Grafana frontend is available at `http://localhost:3000`.
 
-# Running the Application
+The Grafana service is pre-configured with a datasource connected to the PostgreSQL database and a default dashboard.
 
-1.  **Start the backend:**
-    ```bash
-    cd backend
-    uvicorn app.main:app --reload
-    ```
-    The backend will be running at `http://localhost:8000`.
+## Development
 
-2.  **Start Grafana:**
-    - Follow the instructions for your operating system to start the Grafana server.
-    - Open Grafana in your browser (usually at `http://localhost:3000`).
-    - The PostgreSQL datasource and a default dashboard will be pre-configured.
+The backend service is configured for hot-reloading. Any changes you make to the source code in the `backend/` directory will be automatically detected, and the server will restart.
+
 
 # Features
 

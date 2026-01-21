@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://user:password@localhost:5432/db")
+DATABASE_URL = os.getenv("DATABASE_URL")
 DATASET_URL = os.getenv("DATASET_URL", "https://static.krevera.com/dataset.json")
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:121.0) Gecko/20100101 Firefox/121.0"
