@@ -74,9 +74,9 @@ This project uses Docker Compose to orchestrate the services.
 
 2.  **Build and start the services:**
     ```bash
-    docker compose up --build
+    docker compose up --build --force-recreate
     ```
-    This command will build the images for the backend and ingest services, and start all the services. The data ingestion service will run once to populate the database and then exit.
+    This command will build the images, and start all the services. The `--force-recreate` flag ensures that the data ingestion service is re-run every time you start the application. The backend service will wait for the ingestion to complete successfully before starting.
 
 ## Accessing the services
 

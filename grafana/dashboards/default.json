@@ -89,7 +89,7 @@
       },
       "gridPos": {
         "h": 9,
-        "w": 12,
+        "w": 24,
         "x": 0,
         "y": 0
       },
@@ -101,7 +101,7 @@
           "placement": "bottom"
         },
         "tooltip": {
-          "mode": "single"
+          "mode": "multi"
         }
       },
       "targets": [
@@ -111,27 +111,11 @@
             "uid": "${DS_POSTGRESQL}"
           },
           "format": "time_series",
-          "group": [],
-          "metricColumn": "none",
-          "rawQuery": false,
-          "rawSql": "SELECT\n  timestamp AS \"time\",\n  burn_mark_defect_pixel_severity\nFROM product_inspections\nORDER BY timestamp",
-          "refId": "A",
-          "select": [
-            [
-              {
-                "params": [
-                  "burn_mark_defect_pixel_severity"
-                ],
-                "type": "column"
-              }
-            ]
-          ],
-          "table": "product_inspections",
-          "timeColumn": "timestamp",
-          "where": []
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  ${parameters:raw}\nFROM product_inspections\nWHERE molding_machine_id IN (${machine_id:csv})\nORDER BY timestamp",
+          "refId": "A"
         }
       ],
-      "title": "Burn Mark Defect Pixel Severity Over Time",
+      "title": "Molding Machine Parameters",
       "type": "timeseries"
     }
   ],
@@ -139,27 +123,67 @@
   "style": "dark",
   "tags": [],
   "templating": {
-    "list": []
+    "list": [
+      {
+        "current": {
+          "selected": true,
+          "text": "molding-machine-1",
+          "value": "molding-machine-1"
+        },
+        "datasource": {
+          "type": "postgres",
+          "uid": "${DS_POSTGRESQL}"
+        },
+        "definition": "SELECT DISTINCT molding_machine_id FROM product_inspections",
+        "hide": 0,
+        "includeAll": true,
+        "multi": true,
+        "name": "machine_id",
+        "options": [],
+        "query": "SELECT DISTINCT molding_machine_id FROM product_inspections",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": [
+            "CycleTime",
+            "InjPeakPressure"
+          ],
+          "value": [
+            "CycleTime",
+            "InjPeakPressure"
+          ]
+        },
+        "datasource": {
+          "type": "postgres",
+          "uid": "${DS_POSTGRESQL}"
+        },
+        "definition": "SELECT column_name FROM information_schema.columns WHERE table_name = 'product_inspections' AND data_type IN ('integer', 'double precision');",
+        "hide": 0,
+        "includeAll": false,
+        "multi": true,
+        "name": "parameters",
+        "options": [],
+        "query": "SELECT column_name FROM information_schema.columns WHERE table_name = 'product_inspections' AND data_type IN ('integer', 'double precision');",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      }
+    ]
   },
   "time": {
     "from": "now-6h",
     "to": "now"
   },
-  "timepicker": {
-    "refresh_intervals": [
-      "5s",
-      "10s",
-      "30s",
-      "1m",
-      "5m",
-      "15m",
-      "30m",
-      "1h",
-      "2h",
-      "1d"
-    ]
-  },
+  "timepicker": {},
   "timezone": "browser",
-  "title": "Product Inspections",
-  "version": 1
+  "title": "Molding Machine Analysis",
+  "version": 2
 }
