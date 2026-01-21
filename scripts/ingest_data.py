@@ -4,9 +4,6 @@ from datetime import datetime
 from sqlalchemy import create_engine, Column, Integer, String, Float, Boolean, DateTime
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-from dotenv import load_dotenv
-
-load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 DATASET_URL = os.getenv("DATASET_URL", "https://static.krevera.com/dataset.json")

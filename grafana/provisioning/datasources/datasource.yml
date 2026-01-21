@@ -10,5 +10,6 @@ datasources:
     jsonData:
       sslmode: 'disable'
       postgresVersion: 1200
+      database: ${POSTGRES_DB}
     secureJsonData:
       password: ${POSTGRES_PASSWORD}
