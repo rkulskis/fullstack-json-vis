@@ -22,7 +22,7 @@
         {
           "refId": "A",
           "format": "time_series",
-          "rawSql": "SELECT\n  \"timestamp\" AS time,\n  void_defect_pixel_severity_value,\n  void_defect_reject\nFROM product_inspections\nORDER BY \"timestamp\";",
+          "rawSql": "SELECT \"timestamp\" AS time, molding_machine_id AS metric, void_defect_pixel_severity_value AS value FROM product_inspections ORDER BY \"timestamp\"",
           "timeColumn": "time",
           "metricColumn": "none"
         }
