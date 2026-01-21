@@ -1,189 +1,52 @@
 {
-  "__inputs": [
-    {
-      "name": "DS_POSTGRESQL",
-      "label": "PostgreSQL",
-      "description": "",
-      "type": "datasource",
-      "pluginId": "postgres",
-      "pluginName": "PostgreSQL"
-    }
-  ],
-  "__requires": [
-    {
-      "type": "grafana",
-      "id": "grafana",
-      "name": "Grafana",
-      "version": "10.0.3"
-    },
-    {
-      "type": "datasource",
-      "id": "postgres",
-      "name": "PostgreSQL",
-      "version": "1.0.0"
-    }
-  ],
-  "annotations": {
-    "list": []
-  },
-  "editable": true,
-  "gnetId": null,
-  "graphTooltip": 0,
-  "id": 1,
-  "links": [],
+  "id": null,
+  "uid": "product-inspections-ts",
+  "title": "Product Inspections – Time Series",
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "version": 1,
+  "refresh": "5s",
+  "tags": ["postgres", "inspections"],
   "panels": [
     {
-      "datasource": {
-        "type": "postgres",
-        "uid": "${DS_POSTGRESQL}"
+      "id": 1,
+      "type": "timeseries",
+      "title": "Void Defect Metrics",
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 12
       },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "time_series",
+          "rawSql": "SELECT\n  \"timestamp\" AS time,\n  void_defect_pixel_severity_value,\n  void_defect_reject\nFROM product_inspections\nORDER BY \"timestamp\";",
+          "timeColumn": "time",
+          "metricColumn": "none"
+        }
+      ],
       "fieldConfig": {
         "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
+          "unit": "none",
           "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
             "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
+            "lineWidth": 2,
+            "showPoints": "auto"
           }
         },
         "overrides": []
       },
-      "gridPos": {
-        "h": 9,
-        "w": 24,
-        "x": 0,
-        "y": 0
-      },
-      "id": 2,
       "options": {
         "legend": {
-          "calcs": [],
           "displayMode": "list",
           "placement": "bottom"
         },
         "tooltip": {
-          "mode": "multi"
+          "mode": "single"
         }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "postgres",
-            "uid": "${DS_POSTGRESQL}"
-          },
-          "format": "time_series",
-          "rawSql": "SELECT\n  timestamp AS \"time\",\n  ${parameters:raw}\nFROM product_inspections\nWHERE molding_machine_id IN (${machine_id:csv})\nORDER BY timestamp",
-          "refId": "A"
-        }
-      ],
-      "title": "Molding Machine Parameters",
-      "type": "timeseries"
-    }
-  ],
-  "schemaVersion": 36,
-  "style": "dark",
-  "tags": [],
-  "templating": {
-    "list": [
-      {
-        "current": {
-          "selected": true,
-          "text": "molding-machine-1",
-          "value": "molding-machine-1"
-        },
-        "datasource": {
-          "type": "postgres",
-          "uid": "${DS_POSTGRESQL}"
-        },
-        "definition": "SELECT DISTINCT molding_machine_id FROM product_inspections",
-        "hide": 0,
-        "includeAll": true,
-        "multi": true,
-        "name": "machine_id",
-        "options": [],
-        "query": "SELECT DISTINCT molding_machine_id FROM product_inspections",
-        "refresh": 1,
-        "regex": "",
-        "skipUrlSync": false,
-        "sort": 0,
-        "type": "query"
-      },
-      {
-        "current": {
-          "selected": true,
-          "text": [
-            "CycleTime",
-            "InjPeakPressure"
-          ],
-          "value": [
-            "CycleTime",
-            "InjPeakPressure"
-          ]
-        },
-        "datasource": {
-          "type": "postgres",
-          "uid": "${DS_POSTGRESQL}"
-        },
-        "definition": "SELECT column_name FROM information_schema.columns WHERE table_name = 'product_inspections' AND data_type IN ('integer', 'double precision');",
-        "hide": 0,
-        "includeAll": false,
-        "multi": true,
-        "name": "parameters",
-        "options": [],
-        "query": "SELECT column_name FROM information_schema.columns WHERE table_name = 'product_inspections' AND data_type IN ('integer', 'double precision');",
-        "refresh": 1,
-        "regex": "",
-        "skipUrlSync": false,
-        "sort": 0,
-        "type": "query"
       }
-    ]
-  },
-  "time": {
-    "from": "now-6h",
-    "to": "now"
-  },
-  "timepicker": {},
-  "timezone": "browser",
-  "title": "Molding Machine Analysis",
-  "version": 2
+    }
+  ]
 }

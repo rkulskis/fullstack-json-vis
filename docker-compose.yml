@@ -43,6 +43,8 @@ services:
       - "3000:3000"
     env_file:
       - .env
+    environment:
+      - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_UID=/var/lib/grafana/dashboards/default.json
     volumes:
       - ./grafana/provisioning:/etc/grafana/provisioning
       - ./grafana/dashboards:/var/lib/grafana/dashboards
