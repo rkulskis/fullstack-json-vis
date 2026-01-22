@@ -55,3 +55,48 @@ then remove the postgres volume for a fresh start:
 docker compose down -v
 docker compose up
 ```
+
+# Simplicity
+
+The core code/configuration of this project is 241 LOC (excluding the
+Markdown and default grafana dashboard JSON). Below is some info on that.
+
+```
+ross@x1-ubuntu:~/personal/fullstack-json-vis$ tree
+.
+├── docker-compose.yml
+├── grafana
+│   ├── dashboards
+│   │   └── default.json
+│   └── provisioning
+│       ├── dashboards
+│       │   └── dashboard.yml
+│       └── datasources
+│           └── datasource.yml
+├── images
+│   ├── figures.png
+│   └── mobile.png
+├── README.md
+└── scripts
+    ├── Dockerfile
+    ├── ingest_data.py
+    └── requirements.txt
+
+8 directories, 10 files
+```
+
+```
+ross@x1-ubuntu:~/personal/fullstack-json-vis$ cloc .
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+JSON                             1              0              0            409
+Python                           1             22              8            163
+Markdown                         1             18              0             84
+YAML                             3              2              0             68
+Text                             1              0              0              6
+Dockerfile                       1              3              1              4
+-------------------------------------------------------------------------------
+SUM:                             8             45              9            734
+-------------------------------------------------------------------------------
+```
