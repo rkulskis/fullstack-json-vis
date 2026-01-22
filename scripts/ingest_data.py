@@ -6,12 +6,12 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
 DATABASE_URL = os.getenv("DATABASE_URL")
-DATASET_URL = os.getenv("DATASET_URL", "https://static.krevera.com/dataset.json")
+DATASET_URL = os.getenv("DATASET_URL")
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:121.0) Gecko/20100101 Firefox/121.0"
 }
 
-engine = create_engine(DATABASE_URL)
+engine = create_engine(DATABASE_URL, pool_pre_ping=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
@@ -123,42 +123,70 @@ class ProductInspection(Base):
     label_detection_reject = Column(Boolean)
     label_detection_pixel_severity_value = Column(Float)
 
-def ingest_data():
+def prepare_inspection_data(entry):
+    """Transform a single entry into inspection data dict."""
+    machine_state = entry.get("molding-machine-state", {})
+    object_detection = entry.get("object_detection", {})
+
+    inspection_data = {
+        "molding_machine_id": entry.get("molding_machine_id"),
+        "timestamp": datetime.fromtimestamp(entry.get("timestamp")),
+        "version": entry.get("version"),
+        "overall_reject": object_detection.get("reject"),
+    }
+
+    # Add machine state data
+    inspection_data.update(machine_state)
+
+    # Add object detection data
+    for defect_key, defect_value in object_detection.items():
+        if isinstance(defect_value, dict):
+            inspection_data[f"{defect_key}_reject"] = defect_value.get("reject")
+            pixel_severity = defect_value.get("pixel_severity", {})
+            inspection_data[f"{defect_key}_pixel_severity_value"] = pixel_severity.get("value")
+
+    return inspection_data
+
+def ingest_data(batch_size=1000):
+    print("Fetching data...")
     response = requests.get(DATASET_URL, headers=HEADERS)
     response.raise_for_status()
     data = response.json()
+    
+    print(f"Processing {len(data)} records...")
 
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
 
     db = SessionLocal()
-
-    for entry in data:
-        machine_state = entry.get("molding-machine-state", {})
-        object_detection = entry.get("object_detection", {})
-
-        inspection_data = {
-            "molding_machine_id": entry.get("molding_machine_id"),
-            "timestamp": datetime.fromtimestamp(entry.get("timestamp")),
-            "version": entry.get("version"),
-            "overall_reject": object_detection.get("reject"),
-        }
-
-        # Add machine state data
-        for key, value in machine_state.items():
-            inspection_data[key] = value
-
-        # Add object detection data
-        for defect_key, defect_value in object_detection.items():
-            if isinstance(defect_value, dict):
-                inspection_data[f"{defect_key}_reject"] = defect_value.get("reject")
-                pixel_severity = defect_value.get("pixel_severity", {})
-                inspection_data[f"{defect_key}_pixel_severity_value"] = pixel_severity.get("value")
-
-        db.add(ProductInspection(**inspection_data))
-
-    db.commit()
-    db.close()
+    
+    try:
+        # Process data in batches
+        records_to_insert = []
+        
+        for i, entry in enumerate(data):
+            inspection_data = prepare_inspection_data(entry)
+            records_to_insert.append(inspection_data)
+            
+            # Bulk insert when batch size is reached
+            if len(records_to_insert) >= batch_size:
+                db.bulk_insert_mappings(ProductInspection, records_to_insert)
+                db.commit()
+                print(f"Inserted {i + 1}/{len(data)} records...")
+                records_to_insert = []
+        
+        # Insert remaining records
+        if records_to_insert:
+            db.bulk_insert_mappings(ProductInspection, records_to_insert)
+            db.commit()
+            print(f"Inserted {len(data)}/{len(data)} records...")
+            
+    except Exception as e:
+        db.rollback()
+        print(f"Error during ingestion: {e}")
+        raise
+    finally:
+        db.close()
 
 if __name__ == "__main__":
     ingest_data()

@@ -9,7 +9,6 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - app_network
-
   ingest:
     build: ./scripts
     command: python scripts/ingest_data.py
@@ -19,9 +18,9 @@ services:
       - ./scripts:/scripts
     depends_on:
       - postgres
+    restart: "no"  # This prevents the container from restarting after completion
     networks:
       - app_network
-
   grafana:
     image: grafana/grafana:latest
     ports:
@@ -38,9 +37,7 @@ services:
         condition: service_completed_successfully    
     networks:
       - app_network
-
 volumes:
   postgres_data:
-
 networks:
   app_network:
