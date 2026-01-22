@@ -98,3 +98,5 @@ The backend service is configured for hot-reloading. Any changes you make to the
 - **Data Ingestion Script:** A script is provided to fetch the dataset from a URL and ingest it into the database.
 - **Customizable Visualizations:** Grafana dashboards can be customized by the user.
 - **Separate Frontend and Backend:** The application uses Python for the backend and Grafana for the frontend.
+
+docker compose down -v
